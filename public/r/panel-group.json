@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "panel-group",
+  "title": "Panel Group",
+  "description": "Responsive multi-panel layout that derives its column count from the live container width — built for side-by-side resizable Quest windows.",
+  "registryDependencies": [
+    "use-panel-size"
+  ],
+  "files": [
+    {
+      "path": "components/quest/panel-group.tsx",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\n\nimport { usePanelSize } from \"@/hooks/use-panel-size\";\nimport { cn } from \"@/lib/utils\";\n\ntype PanelGroupProps = {\n  children: React.ReactNode;\n  /** Max columns to show when there's room. Defaults to 3. */\n  maxColumns?: number;\n  className?: string;\n};\n\n/**\n * Responsive multi-panel layout.\n *\n * The Quest browser lets users place several resizable windows side by side and\n * drag any one to a new size at any moment. This arranges its children into a\n * column count derived from the *live* container width (via ResizeObserver),\n * collapsing to a single scrolling column on narrow/compact panels. The data\n * attributes expose the current bucket so children can adapt further.\n */\nexport function PanelGroup({\n  children,\n  maxColumns = 3,\n  className,\n}: PanelGroupProps) {\n  const [ref, size] = usePanelSize<HTMLDivElement>();\n\n  const columns = React.useMemo(() => {\n    // ~420px is a comfortable minimum panel column on Quest.\n    const fit = Math.max(1, Math.floor(size.width / 420));\n    return Math.min(maxColumns, fit);\n  }, [size.width, maxColumns]);\n\n  return (\n    <div\n      ref={ref}\n      data-slot=\"panel-group\"\n      data-bucket={size.bucket}\n      data-columns={columns}\n      className={cn(\"grid h-full min-h-0 gap-4\", className)}\n      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}\n    >\n      {children}\n    </div>\n  );\n}\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

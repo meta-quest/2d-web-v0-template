@@ -1,0 +1,56 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "2d-web-v0-template",
+  "homepage": "https://2d-web-v0-template.vercel.app",
+  "items": [
+    {
+      "name": "quest-lib",
+      "type": "registry:lib",
+      "title": "Quest constants",
+      "description": "Meta Quest browser platform constants (2D panel sizes, hit targets) and a browser-detection helper.",
+      "files": [{ "path": "lib/quest.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "use-panel-size",
+      "type": "registry:hook",
+      "title": "usePanelSize",
+      "description": "Track a container's live size with a ResizeObserver and bucket it against the Quest panel envelope, for layouts that reflow as windows resize.",
+      "registryDependencies": ["quest-lib"],
+      "files": [{ "path": "hooks/use-panel-size.ts", "type": "registry:hook" }]
+    },
+    {
+      "name": "quest-panel",
+      "type": "registry:component",
+      "title": "Quest Panel",
+      "description": "An edge-to-edge content panel sized for the Horizon OS window model, with header/body/footer parts and 48px touch targets.",
+      "files": [
+        { "path": "components/quest/quest-panel.tsx", "type": "registry:component" }
+      ]
+    },
+    {
+      "name": "panel-group",
+      "type": "registry:component",
+      "title": "Panel Group",
+      "description": "Responsive multi-panel layout that derives its column count from the live container width — built for side-by-side resizable Quest windows.",
+      "registryDependencies": ["use-panel-size"],
+      "files": [
+        { "path": "components/quest/panel-group.tsx", "type": "registry:component" }
+      ]
+    },
+    {
+      "name": "window-bus",
+      "type": "registry:lib",
+      "title": "Window Bus",
+      "description": "Coordinate multiple browser windows over postMessage + BroadcastChannel (origin-checked, with zero-copy Transferables). On Quest, each window is a panel the user places in 3D space.",
+      "files": [{ "path": "lib/window-bus.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "use-shared-window-state",
+      "type": "registry:hook",
+      "title": "useSharedWindowState",
+      "description": "Share one state object across every same-origin browser window on a named channel; any window updates it and all windows converge, with hello/sync on open.",
+      "registryDependencies": ["window-bus"],
+      "files": [{ "path": "hooks/use-shared-window-state.ts", "type": "registry:hook" }]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "use-panel-size",
+  "title": "usePanelSize",
+  "description": "Track a container's live size with a ResizeObserver and bucket it against the Quest panel envelope, for layouts that reflow as windows resize.",
+  "registryDependencies": [
+    "quest-lib"
+  ],
+  "files": [
+    {
+      "path": "hooks/use-panel-size.ts",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\n\nimport { QUEST_PANEL } from \"@/lib/quest\";\n\nexport type PanelBucket = \"compact\" | \"default\" | \"wide\" | \"ultrawide\";\n\nexport type PanelSize = {\n  width: number;\n  height: number;\n  /** Coarse width bucket relative to the Quest panel envelope. */\n  bucket: PanelBucket;\n  /** width / height. Quest panels can be dragged to unusual ratios. */\n  aspect: number;\n};\n\nfunction bucketFor(width: number): PanelBucket {\n  if (width < 760) return \"compact\";\n  if (width < QUEST_PANEL.width.default) return \"default\";\n  if (width < 1700) return \"wide\";\n  return \"ultrawide\";\n}\n\n/**\n * Track the live size of a container with a ResizeObserver. Quest browser\n * panels can be grabbed and resized at any moment (and a page may be one panel\n * among several), so layout must respond continuously rather than to fixed\n * breakpoints. Attach the returned `ref` to your root element.\n */\nexport function usePanelSize<T extends HTMLElement = HTMLDivElement>(): [\n  React.RefObject<T | null>,\n  PanelSize,\n] {\n  const ref = React.useRef<T>(null);\n  const [size, setSize] = React.useState<PanelSize>({\n    width: QUEST_PANEL.width.default,\n    height: QUEST_PANEL.height.default,\n    bucket: \"default\",\n    aspect: QUEST_PANEL.width.default / QUEST_PANEL.height.default,\n  });\n\n  React.useEffect(() => {\n    const el = ref.current;\n    if (!el) return;\n\n    const observer = new ResizeObserver((entries) => {\n      const entry = entries[0];\n      if (!entry) return;\n      const { width, height } = entry.contentRect;\n      setSize({\n        width,\n        height,\n        bucket: bucketFor(width),\n        aspect: height > 0 ? width / height : 1,\n      });\n    });\n\n    observer.observe(el);\n    return () => observer.disconnect();\n  }, []);\n\n  return [ref, size];\n}\n",
+      "type": "registry:hook"
+    }
+  ],
+  "type": "registry:hook"
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "use-shared-window-state",
+  "title": "useSharedWindowState",
+  "description": "Share one state object across every same-origin browser window on a named channel; any window updates it and all windows converge, with hello/sync on open.",
+  "registryDependencies": [
+    "window-bus"
+  ],
+  "files": [
+    {
+      "path": "hooks/use-shared-window-state.ts",
+      "content": "\"use client\";\n\nimport * as React from \"react\";\n\nimport { createWindowBus, type WindowBus } from \"@/lib/window-bus\";\n\ntype SyncMsg<S> = { kind: \"state\"; state: S } | { kind: \"hello\" };\n\nexport type SharedWindowState<S> = {\n  /** The current shared state (synced across all same-origin windows). */\n  state: S;\n  /** Update locally and broadcast to every other window. */\n  setState: (next: S | ((prev: S) => S)) => void;\n  /** Open + track a child window (call from a click). null until mounted. */\n  openWindow: (url: string, name?: string, features?: string) => Window | null;\n  /** Live child windows opened from this window. */\n  windows: () => Window[];\n  /** True once the bus is connected (client-mounted). */\n  ready: boolean;\n};\n\n/**\n * Share a single state object across every same-origin browser window on a named\n * channel. Any window can update it; all windows converge (last-write-wins). A\n * freshly opened window broadcasts `hello` and the others reply with the current\n * state, so it catches up immediately.\n *\n * On Quest, open several windows with `openWindow(...)`, place them around your\n * space, and they all stay in sync. See `lib/window-bus.ts` for the transport.\n */\nexport function useSharedWindowState<S>(\n  channel: string,\n  initial: S,\n): SharedWindowState<S> {\n  const busRef = React.useRef<WindowBus<SyncMsg<S>> | null>(null);\n  const stateRef = React.useRef<S>(initial);\n  const [state, setLocal] = React.useState<S>(initial);\n  const [ready, setReady] = React.useState(false);\n\n  stateRef.current = state;\n\n  React.useEffect(() => {\n    const bus = createWindowBus<SyncMsg<S>>(channel);\n    busRef.current = bus;\n    setReady(true);\n\n    const off = bus.on((msg) => {\n      if (msg.kind === \"state\") {\n        setLocal(msg.state);\n      } else if (msg.kind === \"hello\") {\n        // A new window joined — share our current snapshot.\n        bus.post({ kind: \"state\", state: stateRef.current });\n      }\n    });\n\n    // Ask any existing windows for the latest state.\n    bus.post({ kind: \"hello\" });\n\n    return () => {\n      off();\n      bus.close();\n      busRef.current = null;\n      setReady(false);\n    };\n  }, [channel]);\n\n  const setState = React.useCallback((next: S | ((prev: S) => S)) => {\n    setLocal((prev) => {\n      const value =\n        typeof next === \"function\" ? (next as (p: S) => S)(prev) : next;\n      busRef.current?.post({ kind: \"state\", state: value });\n      return value;\n    });\n  }, []);\n\n  const openWindow = React.useCallback(\n    (url: string, name?: string, features?: string) =>\n      busRef.current?.openWindow(url, name, features) ?? null,\n    [],\n  );\n\n  const windows = React.useCallback(() => busRef.current?.windows() ?? [], []);\n\n  return { state, setState, openWindow, windows, ready };\n}\n",
+      "type": "registry:hook"
+    }
+  ],
+  "type": "registry:hook"
+}

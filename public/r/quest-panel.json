@@ -1,0 +1,14 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "quest-panel",
+  "title": "Quest Panel",
+  "description": "An edge-to-edge content panel sized for the Horizon OS window model, with header/body/footer parts and 48px touch targets.",
+  "files": [
+    {
+      "path": "components/quest/quest-panel.tsx",
+      "content": "import * as React from \"react\";\n\nimport { cn } from \"@/lib/utils\";\n\n/**\n * A content panel sized for the Quest browser / Horizon OS window model.\n *\n * Horizon OS provides the window chrome (title bar, close/minimize/theater),\n * so panel content should fill edge-to-edge. This component is a flex column\n * that grows to fill its parent and keeps a comfortable dark surface.\n */\nfunction QuestPanel({ className, ...props }: React.ComponentProps<\"section\">) {\n  return (\n    <section\n      data-slot=\"quest-panel\"\n      className={cn(\n        \"bg-card text-card-foreground flex h-full min-h-0 w-full flex-col overflow-hidden rounded-2xl border shadow-sm\",\n        className\n      )}\n      {...props}\n    />\n  );\n}\n\nfunction QuestPanelHeader({ className, ...props }: React.ComponentProps<\"header\">) {\n  return (\n    <header\n      data-slot=\"quest-panel-header\"\n      className={cn(\n        \"flex min-h-touch items-center justify-between gap-3 border-b px-5 py-3\",\n        className\n      )}\n      {...props}\n    />\n  );\n}\n\nfunction QuestPanelTitle({ className, ...props }: React.ComponentProps<\"h2\">) {\n  return (\n    <h2\n      data-slot=\"quest-panel-title\"\n      /* Horizon OS Headline 3 (20/24dp) — the style for a panel/section title. */\n      className={cn(\"text-headline-3 font-semibold\", className)}\n      {...props}\n    />\n  );\n}\n\n/** Scrollable body. Fills remaining height; scrolls with the thumbstick. */\nfunction QuestPanelBody({ className, ...props }: React.ComponentProps<\"div\">) {\n  return (\n    <div\n      data-slot=\"quest-panel-body\"\n      className={cn(\"min-h-0 flex-1 overflow-y-auto p-5\", className)}\n      {...props}\n    />\n  );\n}\n\nfunction QuestPanelFooter({ className, ...props }: React.ComponentProps<\"footer\">) {\n  return (\n    <footer\n      data-slot=\"quest-panel-footer\"\n      className={cn(\"flex items-center gap-3 border-t px-5 py-3\", className)}\n      {...props}\n    />\n  );\n}\n\nexport {\n  QuestPanel,\n  QuestPanelHeader,\n  QuestPanelTitle,\n  QuestPanelBody,\n  QuestPanelFooter,\n};\n",
+      "type": "registry:component"
+    }
+  ],
+  "type": "registry:component"
+}

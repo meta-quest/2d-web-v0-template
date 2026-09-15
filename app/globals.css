@@ -1,0 +1,247 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Meta Horizon OS theme.
+
+  Modelled on the public Horizon OS design guidelines
+  (https://developers.meta.com/horizon/design/styles_color/ and
+  /design/fonts-icons/). The two hard numbers from that spec drive the whole
+  palette:
+
+  - Dark surfaces are never darker than #1A1A1A.
+  - Light surfaces are never brighter than #DADADA.
+
+  Pure #000 is avoided everywhere — in a headset it causes eye strain, and the
+  Quest LCD cannot resolve the bottom of the range anyway. Every pair below
+  clears WCAG 2.1 AA (4.5:1 body text, 3:1 large text and UI).
+
+  The light-mode --card is the one deliberate departure; see the note on it.
+
+  Colors are neutral grays plus Meta blue, rather than a tinted hue, which is
+  what makes Horizon OS surfaces read as "system" rather than "branded".
+
+  Tokens follow the shadcn/ui contract so any shadcn component "just works".
+*/
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /*
+    Horizon OS leans on large, even corner radii — panels and cards are the most
+    recognisable part of the look. `--radius` is the card/control base; panels
+    step up from it.
+  */
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-3xl: calc(var(--radius) * 2.5);
+
+  /*
+    Optimistic Display is the Horizon OS typeface. It is not redistributable, so
+    it is referenced by name first — it resolves inside Meta surfaces that ship
+    it — and falls back to the platform UI sans everywhere else.
+  */
+  --font-sans:
+    "Optimistic Display", "Optimistic Text", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /*
+    Horizon OS type scale (size/line-height in dp; dp ≈ CSS px at the default
+    panel scale, which is why the root font size below stays at 16px).
+  */
+  --text-headline-1: 2rem; /* 32dp */
+  --text-headline-1--line-height: 2.25rem; /* 36dp */
+  --text-headline-2: 1.5rem; /* 24dp */
+  --text-headline-2--line-height: 1.75rem; /* 28dp */
+  --text-headline-3: 1.25rem; /* 20dp */
+  --text-headline-3--line-height: 1.5rem; /* 24dp */
+  --text-body-1: 0.875rem; /* 14dp — primary body copy */
+  --text-body-1--line-height: 1.25rem; /* 20dp */
+  --text-body-2: 0.6875rem; /* 11dp — see note below before using */
+  --text-body-2--line-height: 1rem; /* 16dp */
+
+  /*
+    Quest ergonomics: minimum comfortable hit target is 48dp (~22mm / 3° FOV).
+    These feed Tailwind's spacing scale, so you get h-touch / min-h-touch /
+    min-w-touch / p-touch utilities for free.
+  */
+  --spacing-touch: 3rem; /* 48px — minimum hit target */
+  --spacing-touch-lg: 3.5rem; /* 56px — generous hit target for ray-cast */
+
+  /* Horizon OS system icon sizes. 24dp is the common one. */
+  --spacing-icon: 1.5rem; /* 24dp — system icons */
+  --spacing-icon-status: 1rem; /* 16dp — status icons */
+}
+
+:root {
+  --radius: 1rem;
+
+  /*
+    Light mode. The page stays a step below the guidelines' #DADADA ceiling so
+    surfaces above it have room to read as elevated.
+
+    --card intentionally breaks that ceiling: pure #FFFFFF is 43% brighter than
+    #DADADA, which the guidelines advise against because pure white causes eye
+    strain through headset optics. Contrast is not the problem — everything
+    reads against it at 8:1 or better. Two things to know if you keep it:
+    --popover (#DADADA) is now darker than the card it floats above, inverting
+    the elevation order; and the value should be re-checked on device, where
+    the panel is far brighter than it looks on a desktop monitor.
+  */
+  --background: #cfcfcf;
+  --foreground: #1a1a1a;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --popover: #dadada;
+  --popover-foreground: #1a1a1a;
+  --primary: #0064e0; /* Meta blue */
+  --primary-foreground: #ffffff; /* on-blue only; never a surface color */
+  --secondary: #c4c4c4;
+  --secondary-foreground: #1a1a1a;
+  --muted: #c4c4c4;
+  --muted-foreground: #4a4a4a;
+  --accent: #bcd4f5;
+  --accent-foreground: #10315c;
+  --destructive: #b3261e;
+  --border: #0000001f;
+  --input: #00000029;
+  --ring: #0064e0;
+  --chart-1: #0064e0;
+  --chart-2: #00736b;
+  --chart-3: #6a4bbc;
+  --chart-4: #8a5a00;
+  --chart-5: #b3261e;
+  --sidebar: #d2d2d2;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #0064e0;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #bcd4f5;
+  --sidebar-accent-foreground: #10315c;
+  --sidebar-border: #0000001f;
+  --sidebar-ring: #0064e0;
+}
+
+.dark {
+  /*
+    Dark mode is the Horizon OS default. #1A1A1A is the floor, so the page sits
+    exactly on it and every surface elevates upward from there. Accents are a
+    touch less saturated than their light-mode counterparts, per the guidelines.
+  */
+  --background: #1a1a1a;
+  --foreground: #ebebeb;
+  /*
+    Brightened from #252525 for a stronger panel lift off the page (1.38:1
+    rather than 1.14:1). At this level the blue fill no longer clears 3:1
+    against the panel, so Button's primary variant carries a hairline ring and
+    the boundary is read from that instead — see components/ui/button.tsx.
+    --popover and --muted moved up with it purely to stay above the card and
+    keep the elevation order intact.
+  */
+  --card: #333333;
+  --card-foreground: #ebebeb;
+  --popover: #3a3a3a;
+  --popover-foreground: #ebebeb;
+  --primary: #0a6fe8; /* Meta blue, lifted for contrast on #1A1A1A */
+  --primary-foreground: #ffffff;
+  --secondary: #3d3d3d;
+  --secondary-foreground: #ebebeb;
+  --muted: #3d3d3d;
+  --muted-foreground: #b4b4b4;
+  --accent: #2b3d55;
+  --accent-foreground: #ebebeb;
+  --destructive: #e5484d;
+  --border: #ffffff24;
+  --input: #ffffff2e;
+  --ring: #0a6fe8;
+  --chart-1: #0a6fe8;
+  --chart-2: #3fbfb0;
+  --chart-3: #a78bfa;
+  --chart-4: #e0a458;
+  --chart-5: #e5484d;
+  --sidebar: #212121;
+  --sidebar-foreground: #ebebeb;
+  --sidebar-primary: #0a6fe8;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #2b3d55;
+  --sidebar-accent-foreground: #ebebeb;
+  --sidebar-border: #ffffff24;
+  --sidebar-ring: #0a6fe8;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    /*
+      Kept at the 16px default so the Horizon OS dp scale maps 1:1 onto CSS px —
+      a 14dp Body 1 is 14px, and --spacing-touch resolves to exactly 48px.
+    */
+    font-size: 16px;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    /* Keep panels readable across the full Quest width range (500–2000px). */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /*
+    Horizon OS type is Regular or Strong only, and never italic — italics do not
+    resolve well through headset optics.
+  */
+  i,
+  em {
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  /* Ray-cast and hand-pinch both surface as pointer hover/focus — make them obvious. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+}
+
+/*
+  Note on Body 2 (11dp): it is part of the published Horizon OS scale, but it
+  sits below the 14px floor that the Horizon OS design requirements grade as a
+  publishing Requirement for panel apps. Use `text-body-1` for anything a user
+  has to read; reserve `text-body-2` for dense, non-essential metadata.
+*/
