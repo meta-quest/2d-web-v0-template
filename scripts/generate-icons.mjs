@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 // Generates PWA icons with zero dependencies (pure Node + zlib).
 // Produces public/icons/{icon-192,icon-512,icon-512-maskable}.png
 //
